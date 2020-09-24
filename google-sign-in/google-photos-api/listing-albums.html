@@ -1,0 +1,96 @@
+<!--
+  https://developers.google.com/identity/sign-in/web
+  https://developers.google.com/identity/sign-in/web/incremental-auth
+-->
+<html lang="en">
+  <head>
+    <meta name="google-signin-scope" content="profile email" />
+    <meta
+      name="google-signin-client_id"
+      content="677314510580-lqrddmac2l6k0jpiat8o254h9dk4prsv.apps.googleusercontent.com"
+    />
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+  </head>
+  <body>
+    <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+    <script>
+      /**
+       * 1. gapi.auth2.init()
+       * 2. googleUser.grant()
+       * 3. gapi.load()
+       * 4. gapi.client.request()
+       */
+      function onSignIn(googleUser) {
+        // Useful data for your client-side scripts:
+        var profile = googleUser.getBasicProfile();
+        console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+        console.log("Full Name: " + profile.getName());
+        console.log("Given Name: " + profile.getGivenName());
+        console.log("Family Name: " + profile.getFamilyName());
+        console.log("Image URL: " + profile.getImageUrl());
+        console.log("Email: " + profile.getEmail());
+
+        // The ID token you need to pass to your backend:
+        var id_token = googleUser.getAuthResponse().id_token;
+        console.log("ID Token: " + id_token);
+
+        // https://developers.google.com/identity/sign-in/web/listeners
+        const auth2 = gapi.auth2.init({
+          client_id:
+            "677314510580-lqrddmac2l6k0jpiat8o254h9dk4prsv.apps.googleusercontent.com",
+          // scope: "profile",
+          scope: "profile email",
+        });
+
+        /**
+         * https://developers.google.com/identity/sign-in/web/incremental-auth
+         */
+
+        const options = new gapi.auth2.SigninOptionsBuilder();
+        options.setScope(
+          "email https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/photoslibrary.readonly"
+        );
+
+        googleUser = auth2.currentUser.get();
+        googleUser.grant(options).then(
+          function (success) {
+            console.log(
+              "success to grant current user permission",
+              JSON.stringify({ message: "success", value: success })
+            );
+
+            /**
+             * https://github.com/google/google-api-javascript-client/blob/master/samples/simpleRequest.html
+             */
+
+            gapi.load("client", () => {
+              console.log("gapi client loaded.");
+
+              function writeResponse(resp) {
+                var responseText;
+                if (
+                  resp.error &&
+                  resp.error.errors[0].debugInfo == "QuotaState: BLOCKED"
+                ) {
+                  responseText =
+                    'Invalid API key provided. Please replace the "apiKey" value with your own.';
+                } else {
+                  console.log("photo list response:", resp);
+                }
+              }
+
+              var restRequest = gapi.client.request({
+                path: "https://photoslibrary.googleapis.com/v1/albums",
+              });
+
+              restRequest.execute(writeResponse);
+            });
+          },
+          function (fail) {
+            alert(JSON.stringify({ message: "fail", value: fail }));
+          }
+        );
+      }
+    </script>
+  </body>
+</html>
