@@ -1,0 +1,41 @@
+<!-- https://developers.google.com/identity/sign-in/web/listeners -->
+<html lang="en">
+  <head>
+    <script
+      src="https://apis.google.com/js/platform.js?onload=handleLoaded"
+      async
+      defer
+    ></script>
+  </head>
+  <body>
+    <button id="custom-google-login-button">Login</button>
+    <script>
+      /**
+       * This will called when <script src="platform.js"> loaded.
+       */
+      function handleLoaded() {
+        console.log("platform.js loaded");
+
+        gapi.load("auth2", () => {
+          console.log("auth2 loaded");
+
+          const auth2 = gapi.auth2.init({
+            client_id:
+              "677314510580-lqrddmac2l6k0jpiat8o254h9dk4prsv.apps.googleusercontent.com",
+            scope: "profile email",
+          });
+
+          gapi.load("signin2", function () {
+            console.log("signin2 loaded");
+
+            gapi.signin2.render("custom-google-login-button", {
+              onsuccess: () => {
+                console.log("login success");
+              },
+            });
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
