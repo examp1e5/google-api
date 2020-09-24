@@ -28,12 +28,20 @@
         var id_token = googleUser.getAuthResponse().id_token;
         console.log("ID Token: " + id_token);
 
+        // https://developers.google.com/identity/sign-in/web/listeners
+        const auth2 = gapi.auth2.init({
+          client_id:
+            "677314510580-lqrddmac2l6k0jpiat8o254h9dk4prsv.apps.googleusercontent.com",
+          // scope: "profile",
+          scope: "profile email",
+        });
+
         /**
          * https://developers.google.com/identity/sign-in/web/incremental-auth
          */
 
-        const option = new gapi.auth2.SigninOptionsBuilder();
-        option.setScope("email https://www.googleapis.com/auth/drive");
+        const options = new gapi.auth2.SigninOptionsBuilder();
+        options.setScope("email https://www.googleapis.com/auth/drive");
 
         googleUser = auth2.currentUser.get();
         googleUser.grant(options).then(
