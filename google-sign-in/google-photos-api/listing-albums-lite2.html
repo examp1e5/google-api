@@ -1,0 +1,64 @@
+<html lang="en">
+  <head>
+    <script
+      src="https://apis.google.com/js/platform.js?onload=handleLoaded"
+      async
+      defer
+    ></script>
+  </head>
+  <body>
+    <button id="custom-google-login-button">Login</button>
+    <script>
+      /**
+       * 1. gapi.load("auth2")
+       * 2. gapi.client.request()
+       */
+
+      /**
+       * This will called when <script src="platform.js"> loaded.
+       */
+      function handleLoaded() {
+        console.log("platform.js loaded");
+
+        gapi.load("auth2", () => {
+          console.log("auth2 loaded");
+
+          const auth2 = gapi.auth2.init({
+            client_id:
+              "677314510580-lqrddmac2l6k0jpiat8o254h9dk4prsv.apps.googleusercontent.com",
+            scope:
+              "profile email https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/photoslibrary.readonly",
+          });
+
+          gapi.load("signin2", function () {
+            console.log("signin2 loaded");
+
+            gapi.signin2.render("custom-google-login-button", {
+              onsuccess: () => {
+                console.log("login success");
+
+                /**
+                 * https://github.com/google/google-api-javascript-client/blob/master/samples/simpleRequest.html
+                 */
+
+                const gapiLoaed = () => {
+                  console.log("gapi client loaded.");
+
+                  var restRequest = gapi.client.request({
+                    path: "https://photoslibrary.googleapis.com/v1/albums",
+                  });
+
+                  restRequest.execute((resp) => {
+                    console.log("photo albums list response:", resp);
+                  });
+                };
+
+                gapi.load("client", gapiLoaed);
+              },
+            });
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
