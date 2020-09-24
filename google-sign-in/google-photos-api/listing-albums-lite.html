@@ -1,0 +1,47 @@
+<!--
+  https://developers.google.com/identity/sign-in/web
+  https://developers.google.com/identity/sign-in/web/incremental-auth
+-->
+<html lang="en">
+  <head>
+    <meta
+      name="google-signin-scope"
+      content="profile email https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/photoslibrary.readonly"
+    />
+    <meta
+      name="google-signin-client_id"
+      content="677314510580-lqrddmac2l6k0jpiat8o254h9dk4prsv.apps.googleusercontent.com"
+    />
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+  </head>
+  <body>
+    <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+    <script>
+      /**
+       * 1. gapi.load()
+       * 2. gapi.client.request()
+       */
+      function onSignIn(googleUser) {
+        console.log("onSignIn");
+
+        /**
+         * https://github.com/google/google-api-javascript-client/blob/master/samples/simpleRequest.html
+         */
+
+        const gapiLoaed = () => {
+          console.log("gapi client loaded.");
+
+          var restRequest = gapi.client.request({
+            path: "https://photoslibrary.googleapis.com/v1/albums",
+          });
+
+          restRequest.execute((resp) => {
+            console.log("photo albums list response:", resp);
+          });
+        };
+
+        gapi.load("client", gapiLoaed);
+      }
+    </script>
+  </body>
+</html>
